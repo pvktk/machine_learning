@@ -7,8 +7,4 @@ setup(
     packages=['resnext'],
     description='Homework ResNext based on ResNet.',
     long_description=open('README.txt').read(),
-    install_requires=[
-    	'tensorboardx',
-    	'torch',
-    ],
 )
