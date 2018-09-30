@@ -1,5 +1,8 @@
 This is homework ResNext realization based on ResNet from pytorch.
 
+Loading of pretrained weights is achieved by method
+load_state_dict of nn.Module.
+
 run
 
 pytest
