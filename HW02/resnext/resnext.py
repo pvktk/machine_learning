@@ -13,7 +13,7 @@ def conv3x3(in_planes, out_planes, stride=1):
 
 
 class Bottleneck(nn.Module):
-    expansion = 4
+    expansion = 2
 
     def __init__(self, inplanes, planes, stride=1, downsample=None):
         super(Bottleneck, self).__init__()
@@ -22,8 +22,8 @@ class Bottleneck(nn.Module):
         self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride,
                                padding=1, bias=False, groups=32)
         self.bn2 = nn.BatchNorm2d(planes)
-        self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
-        self.bn3 = nn.BatchNorm2d(planes * 4)
+        self.conv3 = nn.Conv2d(planes, planes * Bottleneck.expansion, kernel_size=1, bias=False)
+        self.bn3 = nn.BatchNorm2d(planes * Bottleneck.expansion)
         self.relu = nn.ReLU(inplace=True)
         self.downsample = downsample
         self.stride = stride
@@ -54,19 +54,19 @@ class Bottleneck(nn.Module):
 class ResNext(nn.Module):
 
     def __init__(self, block, layers, num_classes=1000):
-        self.inplanes = 64
+        self.inplanes = 128
         super(ResNext, self).__init__()
-        self.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3,
+        self.conv1 = nn.Conv2d(1, self.inplanes, kernel_size=7, stride=2, padding=3,
                                bias=False)
-        self.bn1 = nn.BatchNorm2d(64)
+        self.bn1 = nn.BatchNorm2d(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-        self.layer1 = self._make_layer(block, 64, layers[0])
-        self.layer2 = self._make_layer(block, 128, layers[1], stride=2)
-        self.layer3 = self._make_layer(block, 256, layers[2], stride=2)
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2)
+        self.layer1 = self._make_layer(block, 128, layers[0])
+        self.layer2 = self._make_layer(block, 256, layers[1], stride=2)
+        self.layer3 = self._make_layer(block, 512, layers[2], stride=2)
+        self.layer4 = self._make_layer(block, 1024, layers[3], stride=2)
         self.avgpool = nn.AvgPool2d(1, stride=1)
-        self.fc = nn.Linear(512 * block.expansion, num_classes)
+        self.fc = nn.Linear(1024 * block.expansion, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
