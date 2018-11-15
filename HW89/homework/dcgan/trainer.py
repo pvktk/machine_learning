@@ -15,7 +15,7 @@ import metric
 class DCGANTrainer:
 
     def __init__(self, discriminator, generator, optimizer_d, optimizer_g, latent_size=100,
-                 device='cpu', metrics_dir='metrics', save_root='ckpt', log_dir=None):
+                 device='cpu', metrics_dir='metrics', save_root='ckpt', log_dir=None, start_epoch=0):
         self.net_g = generator
         self.net_d = discriminator
         self.optimizer_d = optimizer_d
@@ -28,8 +28,11 @@ class DCGANTrainer:
 
         self.net_g.to(device)
         self.net_d.to(device)
-        self.net_g.apply(self._weights_init)
-        self.net_d.apply(self._weights_init)
+        
+        self.start_epoch = start_epoch
+        if self.start_epoch == 0:
+            self.net_g.apply(self._weights_init)
+            self.net_d.apply(self._weights_init)
 
         self.writer = SummaryWriter(log_dir=log_dir)
 
@@ -52,7 +55,7 @@ class DCGANTrainer:
         criterion = nn.BCELoss()
 
         global_step = 0
-        for epoch in range(n_epoch):
+        for epoch in range(self.start_epoch, n_epoch):
             for i, data in enumerate(dataloader):
 
                 self.net_d.zero_grad()
