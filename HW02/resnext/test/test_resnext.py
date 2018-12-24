@@ -1,5 +1,8 @@
 
 from torch.utils.data import Dataset
+
+import sys
+sys.path.append('.')
 from resnext.resnext import *
 from resnext.trainer import Trainer
 import torch
@@ -26,3 +29,6 @@ def test_forward_pass():
     trainer.train(net)
     
     assert True
+
+if __name__ == "__main__":
+    test_forward_pass()
